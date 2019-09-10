@@ -553,4 +553,46 @@ public class RedisHelper {
     public double removeRange(String key, long start, long end) {
         return redisTemplate.opsForZSet().removeRange(key, start, end);
     }
+
+
+
+    /**
+     * 根据指定的score值得范围来移除成员
+     *
+     * @author: doujie
+     * @date: 2019年9月9日 下午3:56:56
+     * @param:
+     * @return:
+     */
+    public double removeRange(String key, double min, double max) {
+        return redisTemplate.opsForZSet().removeRangeByScore(key, min, max);
+    }
+
+
+    /**
+     * zset 存储
+     * @author: doujie
+     * @date: 2019年9月9日 下午3:57:21
+     * @param args 添加集合
+     * @param args2 score
+     * @param key key值
+     * @return:
+     */
+    public boolean zset(String args,Double args2,String key) {
+        if(null == args || null == args || key == null) {
+            return false;
+        }
+        try {
+            Set<ZSetOperations.TypedTuple<String>> strs = new HashSet<ZSetOperations.TypedTuple<String>>();
+            ZSetOperations.TypedTuple<String> objectTypedTuple1 = new DefaultTypedTuple<String>(args,args2);
+            strs.add(objectTypedTuple1);
+            redisTemplate.opsForZSet().add(key, strs);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 }
