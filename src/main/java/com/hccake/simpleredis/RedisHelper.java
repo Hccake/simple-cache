@@ -428,6 +428,7 @@ public class RedisHelper {
 
     /**
      * 浮点数递增
+     *
      * @param key
      * @param num
      * @return
@@ -438,6 +439,7 @@ public class RedisHelper {
 
     /**
      * Redis执行Lua脚本
+     *
      * @param script
      * @param singletonList
      * @param args
@@ -449,6 +451,31 @@ public class RedisHelper {
             return true;
         }
         return false;
+    }
+
+    /**
+     * zset 存储
+     *
+     * @param args 添加集合
+     * @param key  key值
+     * @author: doujie
+     * @date: 2019年9月9日 下午3:57:21
+     * @return:
+     */
+    public boolean zset(List<String> args, String key) {
+        try {
+            Set<ZSetOperations.TypedTuple<String>> strs = new HashSet<ZSetOperations.TypedTuple<String>>();
+            for (String str : args) {
+                ZSetOperations.TypedTuple<String> objectTypedTuple1 = new DefaultTypedTuple<String>(
+                        str, Double.valueOf(str));
+                strs.add(objectTypedTuple1);
+            }
+            redisTemplate.opsForZSet().add(key, strs);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
@@ -555,7 +582,6 @@ public class RedisHelper {
     }
 
 
-
     /**
      * 根据指定的score值得范围来移除成员
      *
@@ -595,4 +621,44 @@ public class RedisHelper {
     }
 
 
+    /**
+     * zset根据value删除指定成员
+     *
+     * @author: doujie
+     * @date: 2019年9月9日 下午3:56:56
+     * @param:
+     * @return:
+     */
+    public long remove(String key, String values) {
+        return this.redisTemplate.opsForZSet().remove(key, values);
+    }
+
+
+    /**
+     * zset 存储
+     * @author: doujie
+     * @date: 2019年9月9日 下午3:57:21
+     * @param args 添加集合
+     * @param args2 对应于集合的score ps:arg 和 args 长度必须一致
+     * @param key key值
+     * @return:
+     */
+    public boolean zset(List<String> args,List<Double> args2,String key,int size) {
+        if(null == args || null == args || (args.size() != args2.size())) {
+            return false;
+        }
+        try {
+            Set<ZSetOperations.TypedTuple<String>> strs = new HashSet<ZSetOperations.TypedTuple<String>>();
+            for(int i = 0;i< args.size();i++){
+                ZSetOperations.TypedTuple<String> objectTypedTuple1 = new DefaultTypedTuple<String>(
+                        args.get(i),args2.get(i));
+                strs.add(objectTypedTuple1);
+            }
+            this.redisTemplate.opsForZSet().add(key, strs);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
