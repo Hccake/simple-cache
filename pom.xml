@@ -10,7 +10,7 @@
 
     <properties>
         <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.9.10.1</jackson.version>
         <commons-pool2.version>2.6.2</commons-pool2.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
