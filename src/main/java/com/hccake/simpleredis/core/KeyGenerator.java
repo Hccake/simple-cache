@@ -3,6 +3,7 @@ package com.hccake.simpleredis.core;
 import com.hccake.simpleredis.SpELUtil;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -39,6 +40,9 @@ public class KeyGenerator {
         String joint = SpELUtil.parseValueToString(spElContext, spELExpressions);
         Assert.notNull(joint, "Key joint cannot be null!");
 
+        if (StringUtils.isEmpty(key)) {
+            return joint;
+        }
         //拼接后返回
         return jointKey(key, joint);
     }
@@ -81,8 +85,6 @@ public class KeyGenerator {
         //拼接后返回
         return jointKey(list);
     }
-
-
 
 
 
