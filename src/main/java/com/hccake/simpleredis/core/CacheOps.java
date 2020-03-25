@@ -1,11 +1,13 @@
 package com.hccake.simpleredis.core;
 
-import com.hccake.simpleredis.RedisHelper;
-import com.hccake.simpleredis.function.ResultMethod;
-import com.hccake.simpleredis.function.VoidMethod;
+import com.hccake.simpleredis.config.SimpleCacheConfig;
+import com.hccake.simpleredis.template.function.ResultMethod;
+import com.hccake.simpleredis.template.function.VoidMethod;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -18,12 +20,12 @@ public abstract class CacheOps {
 
     /**
      * 基本构造方法
-     * @param redisHelper  缓存工具类
+     * @param redisTemplate  缓存工具类
      * @param pointMethod 返回数据类型
      * @param returnType 织入方法
      */
-    public CacheOps(RedisHelper redisHelper, ResultMethod<Object> pointMethod, Type returnType) {
-        this.redisHelper = redisHelper;
+    public CacheOps(StringRedisTemplate redisTemplate, ResultMethod<Object> pointMethod, Type returnType) {
+        this.redisTemplate = redisTemplate;
         this.returnType = returnType;
         this.pointMethod = pointMethod;
     }
@@ -31,7 +33,7 @@ public abstract class CacheOps {
     /**
      * 缓存连接工具类
      */
-    private RedisHelper redisHelper;
+    private StringRedisTemplate redisTemplate;
 
     /**
      * 织入方法
@@ -44,8 +46,6 @@ public abstract class CacheOps {
      * 数据类型
      */
     private Type returnType;
-
-
 
     /**
      * 缓存分布式锁的key
@@ -74,6 +74,7 @@ public abstract class CacheOps {
      * @return VoidMethod
      */
     private VoidMethod cacheDel;
+
 
     /**
      * 将point的织入方法 封装成函数
@@ -114,8 +115,8 @@ public abstract class CacheOps {
         return returnType;
     }
 
-    public void setRedisHelper(RedisHelper redisHelper) {
-        this.redisHelper = redisHelper;
+    public void setRedisHelper(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     public void setLockKey(String lockKey) {
@@ -142,7 +143,6 @@ public abstract class CacheOps {
         this.returnType = returnType;
     }
 
-
     /**
      * 检查缓存数据是否是空值
      *
@@ -150,15 +150,17 @@ public abstract class CacheOps {
      * @return
      */
     public boolean nullValue(Object cacheData) {
-        return RedisCons.NULL_VALUE.equals(cacheData);
+        return SimpleCacheConfig.nullValue().equals(cacheData);
     }
+
     /**
      * 上锁
      * @param reqId
      * @return
      */
     public Boolean lock(String reqId) {
-        return redisHelper.setexnx(lockKey, reqId, RedisCons.LOCKED_TIME);
+        return redisTemplate.opsForValue()
+                .setIfPresent(lockKey, reqId, SimpleCacheConfig.lockedTimeOut(), TimeUnit.SECONDS);
     }
 
     /**
@@ -167,7 +169,7 @@ public abstract class CacheOps {
      * @return
      */
     public Boolean unlock(String reqId) {
-        redisHelper.del(lockKey);
+        redisTemplate.delete(lockKey);
         return true;
         //TODO 此处eval执行会有类型转换异常错误  暂时注释
         //KEYS【1】：key值是为要加的锁定义的字符串常量

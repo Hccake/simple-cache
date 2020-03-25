@@ -1,4 +1,4 @@
- package com.hccake.simpleredis.multistring;
+package com.hccake.simpleredis.type.hash;
 
 import com.hccake.simpleredis.core.OpType;
 
@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CacheForMultiString {
+public @interface CacheForHash {
 
     /**
      * 操作缓存的类型
@@ -34,8 +34,15 @@ public @interface CacheForMultiString {
     String keyJoint() default "";
 
     /**
-     * 参数角标，指定参数必须是集合类型
+     * redis 存储的field名  SpEL 表达式
      */
-    int multiBy() default 0;
+    String field();
 
+    /**
+     * 超时时间
+     * ttl = 0  使用全局配置值
+     * ttl < 0 :  不超时
+     * ttl > 0 :  使用此超时间
+     */
+    long ttl() default 0;
 }

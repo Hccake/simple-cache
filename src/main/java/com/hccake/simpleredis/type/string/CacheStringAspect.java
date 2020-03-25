@@ -1,18 +1,19 @@
-package com.hccake.simpleredis.hash;
+package com.hccake.simpleredis.type.string;
 
-import com.hccake.simpleredis.RedisHelper;
 import com.hccake.simpleredis.core.CacheOps;
 import com.hccake.simpleredis.core.KeyGenerator;
-import com.hccake.simpleredis.function.ResultMethod;
 import com.hccake.simpleredis.template.TemplateMethod;
-import lombok.extern.slf4j.Slf4j;
+import com.hccake.simpleredis.template.function.ResultMethod;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,13 +22,13 @@ import java.lang.reflect.Type;
 
 /**
  * @author Hccake
- * @version 1.0
  * @date 2019/8/31 18:01
+ * @version 1.0
  */
 @Aspect
 @Component
-@Slf4j
-public class CacheHashAspect {
+public class CacheStringAspect {
+    Logger log = LoggerFactory.getLogger(CacheStringAspect.class);
 
     /**
      * 模板方法
@@ -35,14 +36,12 @@ public class CacheHashAspect {
     @Resource(name = "normalTemplateMethod")
     private TemplateMethod templateMethod;
 
+
     @Autowired
-    private RedisHelper redisHelper;
+    private StringRedisTemplate redisTemplate;
 
-
-    @Pointcut("@annotation(com.hccake.simpleredis.hash.CacheForHash)")
-    public void pointCut() {
-    }
-
+    @Pointcut("@annotation(com.hccake.simpleredis.type.string.CacheForString)")
+    public void pointCut() {}
 
     @Around("pointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -52,10 +51,10 @@ public class CacheHashAspect {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
 
-        log.debug("=======The hash cache aop is executed! method : {}", method.getName());
+        log.debug("=======The string cache aop is executed! method : {}", method.getName());
 
         //方法返回值
-        Type returnType = method.getGenericReturnType();
+        Type genericReturnType = method.getGenericReturnType();
 
         //根据方法的参数 以及当前类对象获得 keyGenerator
         Object target = point.getTarget();
@@ -65,17 +64,18 @@ public class CacheHashAspect {
         // 织入方法
         ResultMethod<Object> pointMethod = CacheOps.genPointMethodByPoint(point);
 
-
         //获取注解对象
-        CacheForHash cacheForHash = AnnotationUtils.getAnnotation(method, CacheForHash.class);
+        CacheForString cacheForString = AnnotationUtils.getAnnotation(method, CacheForString.class);
 
         //获取操作类
-        CacheOps ops = new OpsForHash(cacheForHash, keyGenerator, pointMethod, returnType, redisHelper);
+        CacheOps ops = new OpsForString(cacheForString, keyGenerator, pointMethod, genericReturnType, redisTemplate);
 
         //执行对应模板方法
-        return templateMethod.runByOpType(ops, cacheForHash.type());
+        return templateMethod.runByOpType(ops, cacheForString.type());
 
     }
+
+
 
 
 }

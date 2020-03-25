@@ -1,14 +1,11 @@
 package com.hccake.simpleredis.core;
 
-import lombok.Getter;
-
 /**
  * @author Hccake
  * @version 1.0
  * @date 2019/9/2 20:50
  * 对缓存的几种操作类型
  */
-@Getter
 public enum OpType {
 
     /**

@@ -1,8 +1,8 @@
 package com.hccake.simpleredis.template;
 
+import com.hccake.simpleredis.config.SimpleCacheConfig;
 import com.hccake.simpleredis.core.CacheOps;
-import com.hccake.simpleredis.core.RedisCons;
-import com.hccake.simpleredis.function.ResultMethod;
+import com.hccake.simpleredis.template.function.ResultMethod;
 import com.hccake.simpleredis.serialize.CacheSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,7 +62,7 @@ public class NormalTemplateMethod extends AbstractTemplateMethod{
                 //从数据库查询数据
                 dbData = ops.pointMethod().run();
                 //如果数据库中没数据，填充一个String，防止缓存击穿
-                cacheData = dbData == null ? RedisCons.NULL_VALUE : cacheSerializer.serialize(dbData);
+                cacheData = dbData == null ? SimpleCacheConfig.nullValue() : cacheSerializer.serialize(dbData);
                 //设置缓存
                 ops.cachePut().accept(cacheData);
             }
@@ -93,7 +93,7 @@ public class NormalTemplateMethod extends AbstractTemplateMethod{
         Object data = pointMethod.run();
 
         //将返回值放置入缓存中
-        String cacheData = data == null ? RedisCons.NULL_VALUE : cacheSerializer.serialize(data);
+        String cacheData = data == null ? SimpleCacheConfig.nullValue() : cacheSerializer.serialize(data);
         ops.cachePut().accept(cacheData);
 
         return data;

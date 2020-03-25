@@ -1,8 +1,8 @@
 package com.hccake.simpleredis.template;
 
+import com.hccake.simpleredis.config.SimpleCacheConfig;
 import com.hccake.simpleredis.core.CacheOps;
-import com.hccake.simpleredis.core.RedisCons;
-import com.hccake.simpleredis.function.ResultMethod;
+import com.hccake.simpleredis.template.function.ResultMethod;
 import com.hccake.simpleredis.serialize.CacheSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,7 +92,7 @@ public class MultiTemplateMethod extends AbstractTemplateMethod {
                 result.set(index, data);
 
                 //如果数据库中没数据，填充一个String，防止缓存击穿
-                value = data == null? RedisCons.NULL_VALUE : cacheSerializer.serialize(data);
+                value = data == null? SimpleCacheConfig.nullValue() : cacheSerializer.serialize(data);
                 emptyKeyMap.put(index, value);
             }
 
@@ -126,7 +126,7 @@ public class MultiTemplateMethod extends AbstractTemplateMethod {
         for (int i = 0; i < dbDatas.size(); i++) {
             dbData = dbDatas.get(i);
             //如果数据库中没数据，填充一个String，防止缓存击穿
-            cacheData = dbData == null? RedisCons.NULL_VALUE : cacheSerializer.serialize(dbData);
+            cacheData = dbData == null? SimpleCacheConfig.nullValue() : cacheSerializer.serialize(dbData);
             cacheDatas.add(cacheData);
         }
         //将返回值放置入缓存中

@@ -1,23 +1,26 @@
-package com.hccake.simpleredis.string;
+package com.hccake.simpleredis.type.multistring;
 
-import com.hccake.simpleredis.RedisHelper;
 import com.hccake.simpleredis.core.CacheOps;
 import com.hccake.simpleredis.core.KeyGenerator;
-import com.hccake.simpleredis.function.ResultMethod;
 import com.hccake.simpleredis.template.TemplateMethod;
-import lombok.extern.slf4j.Slf4j;
+import com.hccake.simpleredis.template.function.ResultMethod;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 /**
  * @author Hccake
@@ -26,20 +29,19 @@ import java.lang.reflect.Type;
  */
 @Aspect
 @Component
-@Slf4j
-public class CacheStringAspect {
+public class CacheMultiStringAspect {
+    Logger log = LoggerFactory.getLogger(CacheMultiStringAspect.class);
 
     /**
      * 模板方法
      */
-    @Resource(name = "normalTemplateMethod")
+    @Resource(name = "multiTemplateMethod")
     private TemplateMethod templateMethod;
 
-
     @Autowired
-    private RedisHelper redisHelper;
+    private StringRedisTemplate redisTemplate;
 
-    @Pointcut("@annotation(com.hccake.simpleredis.string.CacheForString)")
+    @Pointcut("@annotation(com.hccake.simpleredis.type.multistring.CacheForMultiString)")
     public void pointCut() {}
 
     @Around("pointCut()")
@@ -52,8 +54,10 @@ public class CacheStringAspect {
 
         log.debug("=======The string cache aop is executed! method : {}", method.getName());
 
-        //方法返回值
-        Type genericReturnType = method.getGenericReturnType();
+        //参照 fastJson TypeRefence的代码
+        //因为multi操作 返回值一定是 List<T> 所以直接取第一个就可以
+        Type type = method.getGenericReturnType();
+        Type dataType = type.getTypeName().equals("void")? null: ((ParameterizedType)type).getActualTypeArguments()[0];
 
         //根据方法的参数 以及当前类对象获得 keyGenerator
         Object target = point.getTarget();
@@ -64,13 +68,16 @@ public class CacheStringAspect {
         ResultMethod<Object> pointMethod = CacheOps.genPointMethodByPoint(point);
 
         //获取注解对象
-        CacheForString cacheForString = AnnotationUtils.getAnnotation(method, CacheForString.class);
+        CacheForMultiString cacheAnnotation = AnnotationUtils.getAnnotation(method, CacheForMultiString.class);
+
+        int paramIndex = cacheAnnotation.multiBy();
+        Collection<String> multiByItem = (Collection<String>)arguments[paramIndex];
 
         //获取操作类
-        CacheOps ops = new OpsForString(cacheForString, keyGenerator, pointMethod, genericReturnType, redisHelper);
+        CacheOps ops = new OpsForMultiString(cacheAnnotation, keyGenerator, pointMethod, dataType, redisTemplate, multiByItem);
 
         //执行对应模板方法
-        return templateMethod.runByOpType(ops, cacheForString.type());
+        return templateMethod.runByOpType(ops, cacheAnnotation.type());
 
     }
 

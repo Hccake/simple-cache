@@ -1,6 +1,6 @@
 package com.hccake.simpleredis.core;
 
-import com.hccake.simpleredis.SpELUtil;
+import com.hccake.simpleredis.config.SimpleCacheConfig;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Hccake
@@ -104,7 +103,7 @@ public class KeyGenerator {
      * @return
      */
     public String jointKey(List<String> list) {
-        return list.stream().collect(Collectors.joining(RedisCons.DELIMITER));
+        return String.join(SimpleCacheConfig.delimiter(), list);
     }
 
 

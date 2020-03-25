@@ -1,4 +1,4 @@
-package com.hccake.simpleredis.hash;
+package com.hccake.simpleredis.type.string;
 
 import com.hccake.simpleredis.core.OpType;
 
@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CacheForHash {
+public @interface CacheForString {
 
     /**
      * 操作缓存的类型
@@ -34,9 +34,12 @@ public @interface CacheForHash {
     String keyJoint() default "";
 
     /**
-     * redis 存储的field名  SpEL 表达式
+     * 超时时间(S)
+     * ttl = 0  使用全局配置值
+     * ttl < 0 :  不超时
+     * ttl > 0 :  使用此超时间
      */
-    String field();
+    long ttl() default 0;
 
 
 }

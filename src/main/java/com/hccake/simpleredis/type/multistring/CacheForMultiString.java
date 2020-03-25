@@ -1,7 +1,6 @@
-package com.hccake.simpleredis.string;
+ package com.hccake.simpleredis.type.multistring;
 
 import com.hccake.simpleredis.core.OpType;
-import com.hccake.simpleredis.core.RedisCons;
 
 import java.lang.annotation.*;
 
@@ -15,7 +14,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CacheForString {
+public @interface CacheForMultiString {
 
     /**
      * 操作缓存的类型
@@ -35,13 +34,8 @@ public @interface CacheForString {
     String keyJoint() default "";
 
     /**
-     * 超时时间
-     * @return
+     * 参数角标，指定参数必须是集合类型
      */
-    long ttl() default RedisCons.EXPIRE_TIME;
-
-
-
-
+    int multiBy() default 0;
 
 }

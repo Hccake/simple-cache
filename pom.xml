@@ -6,23 +6,15 @@
     <packaging>jar</packaging>
     <groupId>com.hccake</groupId>
     <artifactId>simple-cache</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
 
     <properties>
-        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
-        <jackson.version>2.9.10.1</jackson.version>
-        <commons-pool2.version>2.6.2</commons-pool2.version>
-        <lombok.version>1.18.8</lombok.version>
+        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <jackson.version>2.10.1</jackson.version>
     </properties>
 
     <dependencies>
         <!--Aop功能依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
@@ -35,24 +27,12 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-            <version>${commons-pool2.version}</version>
-        </dependency>
 
         <!--json序列化使用-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-            <version>${lombok.version}</version>
         </dependency>
 
     </dependencies>

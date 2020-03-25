@@ -1,4 +1,4 @@
-package com.hccake.simpleredis.function;
+package com.hccake.simpleredis.template.function;
 
 /**
  * @author Hccake
@@ -12,5 +12,5 @@ public interface ResultMethod<T> {
      * 执行并返回一个结果
      * @return
      */
-    public T run();
+    T run();
 }

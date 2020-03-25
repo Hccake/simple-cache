@@ -1,4 +1,4 @@
-package com.hccake.simpleredis.function;
+package com.hccake.simpleredis.template.function;
 
 /**
  * @author Hccake
@@ -11,5 +11,5 @@ public interface VoidMethod {
     /**
      * 只执行 无返回值
      */
-    public void run();
+    void run();
 }

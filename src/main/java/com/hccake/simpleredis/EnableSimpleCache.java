@@ -1,6 +1,6 @@
 package com.hccake.simpleredis;
 
-import com.hccake.simpleredis.config.AutoScanConfig;
+import com.hccake.simpleredis.config.SimpleCacheAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -13,6 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@Import({AutoScanConfig.class})
+@Import({SimpleCacheAutoConfiguration.class})
 public @interface EnableSimpleCache {
 }

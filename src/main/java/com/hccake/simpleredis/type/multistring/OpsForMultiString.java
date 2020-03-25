@@ -1,12 +1,13 @@
-package com.hccake.simpleredis.multistring;
+package com.hccake.simpleredis.type.multistring;
 
-import com.hccake.simpleredis.RedisHelper;
+import com.hccake.simpleredis.config.SimpleCacheConfig;
 import com.hccake.simpleredis.core.CacheOps;
 import com.hccake.simpleredis.core.KeyGenerator;
 import com.hccake.simpleredis.core.OpType;
-import com.hccake.simpleredis.core.RedisCons;
-import com.hccake.simpleredis.function.ResultMethod;
-import com.hccake.simpleredis.function.VoidMethod;
+import com.hccake.simpleredis.template.function.ResultMethod;
+import com.hccake.simpleredis.template.function.VoidMethod;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.DigestUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -33,12 +34,12 @@ public class OpsForMultiString extends CacheOps {
      * @param keyGenerator   key 生成方法
      * @param pointMethod    织入方法
      * @param returnType     返回类型
-     * @param redisHelper    缓存工具类
+     * @param redisTemplate    缓存工具类
      * @param multiByItem
      */
-    public OpsForMultiString(CacheForMultiString cacheForString, KeyGenerator keyGenerator, ResultMethod<Object> pointMethod, Type returnType, RedisHelper redisHelper, Collection<String> multiByItem) throws UnsupportedEncodingException {
+    public OpsForMultiString(CacheForMultiString cacheForString, KeyGenerator keyGenerator, ResultMethod<Object> pointMethod, Type returnType, StringRedisTemplate redisTemplate, Collection<String> multiByItem) throws UnsupportedEncodingException {
 
-        super(redisHelper, pointMethod, returnType);
+        super(redisTemplate, pointMethod, returnType);
 
         //缓存key
         List<String> keys = keyGenerator.getKeys(cacheForString.key(), cacheForString.keyJoint(), multiByItem);
@@ -46,19 +47,19 @@ public class OpsForMultiString extends CacheOps {
         //缓存操作类型
         OpType opType = cacheForString.type();
 
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+
         //CACHED缓存需要的属性
         if (OpType.CACHED.equals(opType)) {
             //redis 分布式锁的 key
             String keyPrefix = cacheForString.key() + cacheForString.keyJoint() + multiByItem.stream().collect(Collectors.joining());
             keyPrefix = DigestUtils.md5DigestAsHex(keyPrefix.getBytes("UTF-8"));
-            String lockKey = keyPrefix + RedisCons.LOCK_KEY_SUFFIX;
+            String lockKey = keyPrefix + SimpleCacheConfig.lockKeySuffix();
             this.setLockKey(lockKey);
 
-
             //缓存查询操作
-            Supplier cacheQuery = () -> redisHelper.mget(keys);
+            Supplier cacheQuery = () -> operations.multiGet(keys);
             this.setCacheQuery(cacheQuery);
-
 
             //缓存更新操作  Cached 中 更新的缓存数据可能只有少数几个
             Consumer<Object> cachePut = (Object obj) -> {
@@ -68,7 +69,7 @@ public class OpsForMultiString extends CacheOps {
                 for (Map.Entry<Integer, String> entry : values.entrySet()) {
                     map.put(keys.get(entry.getKey()), entry.getValue());
                 }
-                redisHelper.mset(map);
+                operations.multiSet(map);
             };
             this.setCachePut(cachePut);
 
@@ -85,7 +86,7 @@ public class OpsForMultiString extends CacheOps {
                 for (int i = 0; i < keys.size(); i++) {
                     map.put(keys.get(i), values.get(i));
                 }
-                redisHelper.mset(map);
+                operations.multiSet(map);
             };
             this.setCachePut(cachePut);
         }
@@ -95,7 +96,7 @@ public class OpsForMultiString extends CacheOps {
         if (OpType.DEL.equals(opType)) {
             VoidMethod cacheDel = () -> {
                 for (String key : keys) {
-                    redisHelper.del(key);
+                    redisTemplate.delete(key);
                 }
             };
             this.setCacheDel(cacheDel);
