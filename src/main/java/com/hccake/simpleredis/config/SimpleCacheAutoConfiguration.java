@@ -1,9 +1,11 @@
 package com.hccake.simpleredis.config;
 
+import com.hccake.simpleredis.core.CacheLock;
 import com.hccake.simpleredis.serialize.CacheSerializer;
 import com.hccake.simpleredis.serialize.JacksonSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
  * @author Hccake
@@ -13,6 +15,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class SimpleCacheAutoConfiguration {
+
+    /**
+     * 利用构造注入初始化CacheLock
+     * @param redisTemplate 
+     */
+    SimpleCacheAutoConfiguration(StringRedisTemplate redisTemplate){
+        CacheLock.init(redisTemplate);
+    }
 
     /**
      * 初始化配置类
@@ -30,5 +40,6 @@ public class SimpleCacheAutoConfiguration {
     public CacheSerializer cacheSerializer(){
         return new JacksonSerializer();
     }
+
 
 }

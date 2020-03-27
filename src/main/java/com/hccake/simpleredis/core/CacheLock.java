@@ -3,9 +3,6 @@ package com.hccake.simpleredis.core;
 import com.hccake.simpleredis.config.GlobalCacheConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 
@@ -19,13 +16,17 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/3/27 21:15
  * 缓存锁的操作类
  */
-public class CacheLock implements ApplicationContextAware {
+public class CacheLock {
     private static Logger log = LoggerFactory.getLogger(CacheLock.class);
     private static StringRedisTemplate redisTemplate;
+    private static boolean isInit = false;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        redisTemplate = applicationContext.getBean(StringRedisTemplate.class);
+    public static void init(StringRedisTemplate redisTemplate){
+        if (isInit){
+            throw new RuntimeException("Class [CacheLock] cannot initialize multiple times");
+        }
+        isInit = true;
+        CacheLock.redisTemplate = redisTemplate;
     }
 
     /**
