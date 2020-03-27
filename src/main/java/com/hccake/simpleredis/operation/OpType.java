@@ -1,4 +1,4 @@
-package com.hccake.simpleredis.core;
+package com.hccake.simpleredis.operation;
 
 /**
  * @author Hccake
@@ -7,6 +7,11 @@ package com.hccake.simpleredis.core;
  * 对缓存的几种操作类型
  */
 public enum OpType {
+
+    /**
+     * 无缓存，直接执行原始方法
+     */
+    ORIGINAL,
 
     /**
      * 先查询缓存，如果有则直接返回

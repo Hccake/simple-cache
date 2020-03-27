@@ -1,6 +1,4 @@
-package com.hccake.simpleredis.type.hash;
-
-import com.hccake.simpleredis.core.OpType;
+package com.hccake.simpleredis.core.annotation;
 
 import java.lang.annotation.*;
 
@@ -8,19 +6,14 @@ import java.lang.annotation.*;
  * @author Hccake
  * @version 1.0
  * @date 2019/8/31 16:08
- * 利用Aop, 在方法调用前先查询缓存
- * 若缓存中没有数据，则调用方法本身，并将方法返回值放置入缓存中
+ * 利用Aop, 在方法执行后执行缓存put操作
+ * 将方法的返回值置入缓存中，若方法返回null，则会默认置入一个nullValue
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CacheForHash {
-
-    /**
-     * 操作缓存的类型
-     * @return
-     */
-    OpType type();
+@MetaCacheAnnotation
+public @interface CachePut {
 
     /**
      * redis 存储的Key名
@@ -34,15 +27,12 @@ public @interface CacheForHash {
     String keyJoint() default "";
 
     /**
-     * redis 存储的field名  SpEL 表达式
-     */
-    String field();
-
-    /**
-     * 超时时间
+     * 超时时间(S)
      * ttl = 0  使用全局配置值
      * ttl < 0 :  不超时
      * ttl > 0 :  使用此超时间
      */
     long ttl() default 0;
+
+
 }

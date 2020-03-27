@@ -5,10 +5,8 @@ package com.hccake.simpleredis.config;
  * @version 1.0
  * @date 2020/3/20 16:56
  */
-public class SimpleCacheConfig {
-
+public class GlobalCacheConfig {
     private static SimpleCacheProperties simpleCacheProperties;
-
     private static boolean isInit = false;
 
     public static void init(SimpleCacheProperties simpleCacheProperties){
@@ -16,7 +14,7 @@ public class SimpleCacheConfig {
            throw new RuntimeException("cannot initialize multiple times");
         }
         isInit = true;
-        SimpleCacheConfig.simpleCacheProperties = simpleCacheProperties;
+        GlobalCacheConfig.simpleCacheProperties = simpleCacheProperties;
     }
 
     public static String lockKeySuffix() {

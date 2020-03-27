@@ -1,7 +1,8 @@
 package com.hccake.simpleredis.config;
 
+import com.hccake.simpleredis.serialize.CacheSerializer;
+import com.hccake.simpleredis.serialize.JacksonSerializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
  * 指定扫描包
  */
 @Configuration
-@ComponentScan("com.hccake.simpleredis.**")
 public class SimpleCacheAutoConfiguration {
 
     /**
@@ -22,8 +22,13 @@ public class SimpleCacheAutoConfiguration {
     public SimpleCacheProperties simpleCacheProperties(){
         SimpleCacheProperties simpleCacheProperties = new SimpleCacheProperties();
         // 提供静态方法
-        SimpleCacheConfig.init(simpleCacheProperties);
+        GlobalCacheConfig.init(simpleCacheProperties);
         return simpleCacheProperties;
+    }
+
+    @Bean
+    public CacheSerializer cacheSerializer(){
+        return new JacksonSerializer();
     }
 
 }

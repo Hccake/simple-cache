@@ -1,6 +1,4 @@
-package com.hccake.simpleredis.type.string;
-
-import com.hccake.simpleredis.core.OpType;
+package com.hccake.simpleredis.core.annotation;
 
 import java.lang.annotation.*;
 
@@ -14,13 +12,8 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CacheForString {
-
-    /**
-     * 操作缓存的类型
-     * @return
-     */
-    OpType type();
+@MetaCacheAnnotation
+public @interface Cached {
 
     /**
      * redis 存储的Key名
