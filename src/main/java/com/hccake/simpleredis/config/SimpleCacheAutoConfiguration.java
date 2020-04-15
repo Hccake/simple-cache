@@ -26,14 +26,11 @@ public class SimpleCacheAutoConfiguration {
 
     /**
      * 初始化配置类
-     * @return SimpleCacheProperties
+     * @return GlobalCacheProperties
      */
     @Bean
-    public SimpleCacheProperties simpleCacheProperties(){
-        SimpleCacheProperties simpleCacheProperties = new SimpleCacheProperties();
-        // 提供静态方法
-        GlobalCacheConfig.init(simpleCacheProperties);
-        return simpleCacheProperties;
+    public GlobalCacheProperties globalCacheProperties(){
+        return new GlobalCacheProperties();
     }
 
     @Bean

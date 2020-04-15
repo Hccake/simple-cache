@@ -1,6 +1,6 @@
 package com.hccake.simpleredis.core;
 
-import com.hccake.simpleredis.config.GlobalCacheConfig;
+import com.hccake.simpleredis.config.GlobalCacheProperties;
 import com.hccake.simpleredis.core.annotation.CacheDel;
 import com.hccake.simpleredis.core.annotation.CachePut;
 import com.hccake.simpleredis.core.annotation.Cached;
@@ -71,7 +71,7 @@ public class CacheStringAspect {
             //缓存key
             String key = keyGenerator.getKey(cachedAnnotation.key(), cachedAnnotation.keyJoint());
             //redis 分布式锁的 key
-            String lockKey = key + GlobalCacheConfig.lockKeySuffix();
+            String lockKey = key + GlobalCacheProperties.lockKeySuffix();
             Supplier<String> cacheQuery = () -> valueOperations.get(key);
             // 失效时间控制
             Consumer<Object> cachePut = prodCachePutFunction(valueOperations, key, cachedAnnotation.ttl());
@@ -105,7 +105,7 @@ public class CacheStringAspect {
         if (ttl < 0) {
             cachePut = value -> valueOperations.set(key, (String) value);
         } else if (ttl == 0) {
-            cachePut = value -> valueOperations.set(key, (String) value, GlobalCacheConfig.expireTime(), TimeUnit.SECONDS);
+            cachePut = value -> valueOperations.set(key, (String) value, GlobalCacheProperties.expireTime(), TimeUnit.SECONDS);
         } else {
             cachePut = value -> valueOperations.set(key, (String) value, ttl, TimeUnit.SECONDS);
         }
@@ -152,7 +152,7 @@ public class CacheStringAspect {
                 //从数据库查询数据
                 dbData = ops.joinPoint().proceed();
                 //如果数据库中没数据，填充一个String，防止缓存击穿
-                cacheData = dbData == null ? GlobalCacheConfig.nullValue() : cacheSerializer.serialize(dbData);
+                cacheData = dbData == null ? GlobalCacheProperties.nullValue() : cacheSerializer.serialize(dbData);
                 //设置缓存
                 ops.cachePut().accept(cacheData);
             }
@@ -181,7 +181,7 @@ public class CacheStringAspect {
         Object data = ops.joinPoint().proceed();
 
         //将返回值放置入缓存中
-        String cacheData = data == null ? GlobalCacheConfig.nullValue() : cacheSerializer.serialize(data);
+        String cacheData = data == null ? GlobalCacheProperties.nullValue() : cacheSerializer.serialize(data);
         ops.cachePut().accept(cacheData);
 
         return data;

@@ -1,6 +1,6 @@
 package com.hccake.simpleredis.core;
 
-import com.hccake.simpleredis.config.GlobalCacheConfig;
+import com.hccake.simpleredis.config.GlobalCacheProperties;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -103,7 +103,7 @@ public class KeyGenerator {
      * @return
      */
     public String jointKey(List<String> list) {
-        return String.join(GlobalCacheConfig.delimiter(), list);
+        return String.join(GlobalCacheProperties.delimiter(), list);
     }
 
 

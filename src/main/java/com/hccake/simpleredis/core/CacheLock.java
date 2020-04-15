@@ -1,6 +1,6 @@
 package com.hccake.simpleredis.core;
 
-import com.hccake.simpleredis.config.GlobalCacheConfig;
+import com.hccake.simpleredis.config.GlobalCacheProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -37,7 +37,7 @@ public class CacheLock {
     public static Boolean lock(String lockKey, String requestId) {
         log.info("lock: {key:{}, clientId:{}}", lockKey, requestId);
         return redisTemplate.opsForValue()
-                .setIfAbsent(lockKey, requestId, GlobalCacheConfig.lockedTimeOut(), TimeUnit.SECONDS);
+                .setIfAbsent(lockKey, requestId, GlobalCacheProperties.lockedTimeOut(), TimeUnit.SECONDS);
     }
 
 

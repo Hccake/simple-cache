@@ -1,6 +1,6 @@
 package com.hccake.simpleredis.operation;
 
-import com.hccake.simpleredis.config.GlobalCacheConfig;
+import com.hccake.simpleredis.config.GlobalCacheProperties;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /**
@@ -32,7 +32,7 @@ public abstract class AbstractCacheOps {
      * @return
      */
     public boolean nullValue(Object cacheData) {
-        return GlobalCacheConfig.nullValue().equals(cacheData);
+        return GlobalCacheProperties.nullValue().equals(cacheData);
     }
 
 
