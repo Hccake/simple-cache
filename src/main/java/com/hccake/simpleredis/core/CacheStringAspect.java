@@ -16,7 +16,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -35,7 +34,6 @@ import java.util.function.Supplier;
  * @version 1.0
  */
 @Aspect
-@Configuration
 public class CacheStringAspect {
     Logger log = LoggerFactory.getLogger(CacheStringAspect.class);
     private final CacheSerializer cacheSerializer;

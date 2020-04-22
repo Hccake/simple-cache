@@ -4,7 +4,6 @@ import com.hccake.simpleredis.core.CacheLock;
 import com.hccake.simpleredis.serialize.CacheSerializer;
 import com.hccake.simpleredis.serialize.JacksonSerializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
@@ -13,7 +12,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @date 2019/9/2 14:13
  * 指定扫描包
  */
-@Configuration
 public class SimpleCacheAutoConfiguration {
 
     /**
