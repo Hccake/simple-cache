@@ -16,25 +16,23 @@ public class SimpleCacheAutoConfiguration {
 
     /**
      * 利用构造注入初始化CacheLock
-     * @param redisTemplate 
      */
-    SimpleCacheAutoConfiguration(StringRedisTemplate redisTemplate){
-        CacheLock.init(redisTemplate);
+    SimpleCacheAutoConfiguration(StringRedisTemplate redisTemplate, GlobalCacheProperties properties) {
+        CacheLock.init(redisTemplate, properties);
     }
 
     /**
      * 初始化配置类
+     *
      * @return GlobalCacheProperties
      */
     @Bean
-    public GlobalCacheProperties globalCacheProperties(){
+    public GlobalCacheProperties globalCacheProperties() {
         return new GlobalCacheProperties();
     }
 
     @Bean
-    public CacheSerializer cacheSerializer(){
+    public CacheSerializer cacheSerializer() {
         return new JacksonSerializer();
     }
-
-
 }

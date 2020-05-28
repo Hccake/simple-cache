@@ -10,7 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public abstract class AbstractCacheOps {
 
-    public AbstractCacheOps(ProceedingJoinPoint joinPoint){
+    public AbstractCacheOps(ProceedingJoinPoint joinPoint) {
         this.joinPoint = joinPoint;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractCacheOps {
      * @return
      */
     public boolean nullValue(Object cacheData) {
-        return GlobalCacheProperties.nullValue().equals(cacheData);
+        return GlobalCacheProperties.getStaticNullValue().equals(cacheData);
     }
 
 

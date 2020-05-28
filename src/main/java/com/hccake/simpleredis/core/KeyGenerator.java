@@ -47,7 +47,6 @@ public class KeyGenerator {
     }
 
 
-
     public List<String> getKeys(String key, String keyJoint, Collection<String> multiByItem) {
         String keyPrefix = getKey(key, keyJoint);
 
@@ -60,23 +59,20 @@ public class KeyGenerator {
     }
 
 
-
     /**
-     * @param key
-     * @param spELExpressions
-     * @return
+     *
      */
-    public String getKeys(String key, String[] spELExpressions) {
+    public String getKeys(String key, String[] spElExpressions) {
         //根据keyJoint 判断是否需要拼接
-        if (spELExpressions == null || spELExpressions.length == 0) {
+        if (spElExpressions == null || spElExpressions.length == 0) {
             return key;
         }
 
         //获取所有需要拼接的元素, 组装进集合中
-        List<String> list = new ArrayList<>(spELExpressions.length + 1);
+        List<String> list = new ArrayList<>(spElExpressions.length + 1);
         list.add(key);
-        for (String joint : spELExpressions) {
-            String s = parseSpEL(joint);
+        for (String joint : spElExpressions) {
+            String s = parseSpEl(joint);
             Assert.notNull(s, "Key joint cannot be null!");
             list.add(s);
         }
@@ -86,36 +82,26 @@ public class KeyGenerator {
     }
 
 
-
     /**
      * 解析SPEL
-     * @param field
-     * @return
      */
-    public String parseSpEL(String field) {
+    public String parseSpEl(String field) {
         return SpELUtil.parseValueToString(spElContext, field);
     }
 
 
     /**
      * 拼接key, 默认使用 ：作为分隔符
-     * @param list
-     * @return
      */
     public String jointKey(List<String> list) {
-        return String.join(GlobalCacheProperties.delimiter(), list);
+        return String.join(GlobalCacheProperties.getStaticDelimiter(), list);
     }
 
 
     /**
      * 拼接key, 默认使用 ：作为分隔符
-     * @param items
-     * @return
      */
     public String jointKey(String... items) {
         return jointKey(Arrays.asList(items));
     }
-
-
-
 }

@@ -9,68 +9,76 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "simple.cache")
 public class GlobalCacheProperties {
+    private static String STATIC_DELIMITER = ":";
+    private static String STATIC_NULL_VALUE = "N_V";
     /**
      * redis锁 后缀
      */
-    private static String lockKeySuffix = "locked";
+    private String lockKeySuffix = "locked";
     /**
      * 默认分隔符
      */
-    private static String delimiter= ":";
+    private String delimiter = STATIC_DELIMITER;
     /**
      * 空值标识
      */
-    private static String nullValue = "N_V";
+    private String nullValue = STATIC_NULL_VALUE;
     /**
      * 默认超时时间(s)
      */
-    private static long expireTime = 86400L;
+    private long expireTime = 86400L;
     /**
      * 锁的超时时间(ms)
      */
-    private static long lockedTimeOut = 1000L;
+    private long lockedTimeOut = 1000L;
 
+    public static String getStaticDelimiter() {
+        return STATIC_DELIMITER;
+    }
+
+    public static String getStaticNullValue() {
+        return STATIC_NULL_VALUE;
+    }
+
+    public String getLockKeySuffix() {
+        return lockKeySuffix;
+    }
 
     public void setLockKeySuffix(String lockKeySuffix) {
-        GlobalCacheProperties.lockKeySuffix = lockKeySuffix;
+        this.lockKeySuffix = lockKeySuffix;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
     }
 
     public void setDelimiter(String delimiter) {
-        GlobalCacheProperties.delimiter = delimiter;
+        STATIC_DELIMITER = delimiter;
+        this.delimiter = delimiter;
     }
 
-    public void setNullValue(String nullValue) {
-        GlobalCacheProperties.nullValue = nullValue;
-    }
-
-    public void setExpireTime(long expireTime) {
-        GlobalCacheProperties.expireTime = expireTime;
-    }
-
-    public void setLockedTimeOut(long lockedTimeOut) {
-        GlobalCacheProperties.lockedTimeOut = lockedTimeOut;
-    }
-
-
-    public static String lockKeySuffix() {
-        return GlobalCacheProperties.lockKeySuffix;
-    }
-
-    public static String delimiter() {
-        return GlobalCacheProperties.delimiter;
-    }
-
-    public static String nullValue() {
+    public String getNullValue() {
         return nullValue;
     }
 
-    public static long expireTime() {
-        return GlobalCacheProperties.expireTime;
+    public void setNullValue(String nullValue) {
+        STATIC_NULL_VALUE = nullValue;
+        this.nullValue = nullValue;
     }
 
-    public static long lockedTimeOut() {
-        return GlobalCacheProperties.lockedTimeOut;
+    public long getExpireTime() {
+        return expireTime;
     }
 
+    public void setExpireTime(long expireTime) {
+        this.expireTime = expireTime;
+    }
 
+    public long getLockedTimeOut() {
+        return lockedTimeOut;
+    }
+
+    public void setLockedTimeOut(long lockedTimeOut) {
+        this.lockedTimeOut = lockedTimeOut;
+    }
 }

@@ -17,12 +17,13 @@ import java.util.concurrent.TimeUnit;
  * 缓存锁的操作类
  */
 public class CacheLock {
-    private static Logger log = LoggerFactory.getLogger(CacheLock.class);
+    private static final Logger log = LoggerFactory.getLogger(CacheLock.class);
     private static StringRedisTemplate redisTemplate;
+    private static GlobalCacheProperties properties;
     private static boolean isInit = false;
 
-    public static void init(StringRedisTemplate redisTemplate){
-        if (isInit){
+    public static void init(StringRedisTemplate redisTemplate, GlobalCacheProperties properties) {
+        if (isInit) {
             throw new RuntimeException("Class [CacheLock] cannot initialize multiple times");
         }
         isInit = true;
@@ -31,21 +32,21 @@ public class CacheLock {
 
     /**
      * 上锁
+     *
      * @param requestId 请求id
      * @return Boolean 是否成功获得锁
      */
     public static Boolean lock(String lockKey, String requestId) {
         log.info("lock: {key:{}, clientId:{}}", lockKey, requestId);
         return redisTemplate.opsForValue()
-                .setIfAbsent(lockKey, requestId, GlobalCacheProperties.lockedTimeOut(), TimeUnit.SECONDS);
+                .setIfAbsent(lockKey, requestId, properties.getLockedTimeOut(), TimeUnit.SECONDS);
     }
 
 
     /**
-     *
      * 释放锁lua脚本
-     *  KEYS【1】：key值是为要加的锁定义的字符串常量
-     *  ARGV【1】：value值是 request id, 用来防止解除了不该解除的锁. 可用 UUID
+     * KEYS【1】：key值是为要加的锁定义的字符串常量
+     * ARGV【1】：value值是 request id, 用来防止解除了不该解除的锁. 可用 UUID
      */
     private static final String RELEASE_LOCK_LUA_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
     /**
@@ -56,7 +57,7 @@ public class CacheLock {
     /**
      * 释放锁
      *
-     * @param key      锁ID
+     * @param key       锁ID
      * @param requestId 请求ID
      * @return 是否成功
      */
@@ -67,7 +68,6 @@ public class CacheLock {
         Long result = redisTemplate.execute(redisScript, Collections.singletonList(key), requestId);
         return Objects.equals(result, RELEASE_LOCK_SUCCESS_RESULT);
     }
-
 
 
 }
